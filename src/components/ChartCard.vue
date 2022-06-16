@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: '#ffffff'">
     <apexchart
       ref="chart"
       type="bar"
@@ -36,6 +36,7 @@ export default {
       optionsChart: {
         chart: {
           type: "bar",
+          background: "#fff",
           height: 350,
           // stacked: true,
           toolbar: {
@@ -48,6 +49,61 @@ export default {
             align: "center",
             offsetX: 0,
             text: "",
+          },
+        },
+        stroke: {
+          width: [0, 4],
+        },
+
+        xaxis: {
+          labels: {
+            formatter: function (value) {
+              return value;
+            },
+            trim: true,
+            maxHeight: 70,
+            rotate: -45,
+          },
+        },
+        plotOptions: {
+          bar: {
+            dataLabels: {
+              position: "top", // top, center, bottom
+            },
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          offsetY: -20,
+          style: {
+            fontSize: "12px",
+            colors: ["#00000099"],
+          },
+        },
+        tooltip: {
+          enabled: true,
+          enabledOnSeries: undefined,
+          intersect: false,
+          inverseOrder: false,
+          custom: undefined,
+
+          style: {
+            fontSize: "12px",
+            fontFamily: undefined,
+          },
+          onDatasetHover: {
+            highlightDataSeries: false,
+          },
+          x: {
+            show: true,
+          },
+          items: {
+            display: "none",
+          },
+          fixed: {
+            position: "topRight",
+            offsetX: 0,
+            offsetY: 0,
           },
         },
       },
@@ -68,25 +124,30 @@ export default {
         count: this.chartConfig.count,
       };
 
-      if (Object.keys(this.filters).length > 0) {
-        for (const [key, value] of Object.entries(this.filters)) {
-          if (Array.isArray(value)) {
-            value.forEach((item) => {
-              console.log(item);
-              //TODO filters
-              // console.log(encodeURIComponent(JSON.stringify(['sad', 'dsa', 'weqw', 'sd'])));
-            });
-          } else {
-            params[key] = value;
+      if (this.filters.length > 0) {
+        console.log("filters", this.filters);
+        this.filters.forEach((filter) => {
+          if (filter !== undefined && filter.length > 0) {
+            console.log("fifi", filter);
+
+            if (filter.length == 1) {
+              console.log(filter[0]);
+              params[filter[0].group] = filter[0].title;
+            } else {
+              params[filter[0].group] = JSON.stringify(
+                filter.map((y) => y.title)
+              );
+            }
           }
-        }
+        });
       }
 
-      // const { data } = this.groupBy({
+      console.log(params);
+
       this.groupBy({
         params: params,
       }).then((response) => {
-        console.log(response);
+        // console.log(response);
         this.chartData = response.data;
         this.updateOptionsChart();
         this.updateSeriesChart();
@@ -104,11 +165,14 @@ export default {
         text: this.chartConfig.title,
         align: "center",
         offsetX: 0,
+        style: {
+          fontSize: "18px",
+          color: "#00000099",
+        },
       };
     },
 
     updateSeriesChart() {
-      console.log("gmmm");
       this.seriesChart = [];
 
       this.seriesChart.push({

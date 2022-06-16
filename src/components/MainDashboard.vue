@@ -1,30 +1,54 @@
 <template>
-  <v-container>
-    <v-row no-gutters>
-      <v-col v-for="n in 12" :key="n" cols="12" sm="3">
-        <!-- <v-card class="pa-2" outlined tile> One of three columns </v-card> -->
-        <v-select
-          :label="labels[n-1]"
-          v-model="selected"
-          :items="select"
-          item-text="value"
-          outlined
-          multiple
-          return-object
-          style="padding-right: 20px"
-        ></v-select>
-      </v-col>
+  <div>
+    <v-row id="title-row" justify="center" align="center">
+      <p id="title-text">REDs do SIMEC</p>
     </v-row>
-    <!-- <div class="center">
-    <p>The text within the div is centered horizontally.</p>
-    </div> -->
-    <v-row :align="center" no-gutters>
-      <v-col cols="5" v-for="(chartConfig, i) in chartConfigs" :key="i + 1">
-        <chart-card class="pa-2" :chartConfig="chartConfig" :filters="filters">
-        </chart-card>
-      </v-col>
-    </v-row>
-  </v-container>
+    <v-container v-if="loaded">
+      <v-row no-gutters>
+        <v-col v-for="n in 12" :key="n" cols="12" sm="3">
+          <v-select
+            background-color="white"
+            :label="labels[n - 1].title"
+            v-model="selected[n - 1]"
+            :items="filters[n - 1]"
+            item-text="title"
+            outlined
+            multiple
+            return-object
+            style="padding-left: 10px; padding-right: 10px"
+          >
+            <template v-slot:selection="{ item, index }">
+              <v-chip v-if="index === 0">
+                <span>{{
+                  item.title.length > 19
+                    ? item.title.substring(0, 15) + "..."
+                    : item.title
+                }}</span>
+              </v-chip>
+              <span v-if="index === 1" class="grey--text text-caption">
+                (+{{ selected[n - 1].length - 1 }} outros)
+              </span>
+            </template>
+          </v-select>
+        </v-col>
+      </v-row>
+      <v-row align="center" no-gutters>
+        <v-col
+          cols="6"
+          style="background-color: '#ffffff'"
+          v-for="(chartConfig, i) in chartConfigs"
+          :key="i + 1"
+        >
+          <chart-card
+            class="pa-2"
+            :chartConfig="chartConfig"
+            :filters="selected"
+          >
+          </chart-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -38,7 +62,7 @@ export default {
 
   data: () => {
     return {
-      filters: [],
+      loaded: 0,
       chartConfigs: [
         {
           group: "edital",
@@ -65,49 +89,117 @@ export default {
           count: "id",
           title: "Extensão do Arquivo",
         },
-      ],
-      select: [
         {
-          value: "Impresso",
-        },
-        {
-          value: "Digital",
-        },
-        {
-          value: "Audiovisual",
+          group: "baixado",
+          count: "id",
+          title: "Selecionado",
         },
       ],
+      filters: [],
       selected: [],
       labels: [
-        "Edital",
-        "Editora",
-        "Coleção",
-        "Volume",
-        "Série",
-        "Componente",
-        "Exemplar",
-        "Formato",
-        "Tipo do Recurso",
-        "Tipo de Arquivo",
-        "Nome do Arquivo",
-        "Extensão do Arquivo",
+        {
+          title: "Edital",
+          group: "edital",
+          count: "id",
+        },
+        {
+          title: "Editora",
+          group: "editora",
+          count: "id",
+        },
+        {
+          title: "Coleção",
+          group: "colecao",
+          count: "id",
+        },
+        {
+          title: "Volume",
+          group: "volume",
+          count: "id",
+        },
+        {
+          title: "Série",
+          group: "serie",
+          count: "id",
+        },
+        {
+          title: "Componente",
+          group: "componente",
+          count: "id",
+        },
+        {
+          title: "Exemplar",
+          group: "exemplar",
+          count: "id",
+        },
+        {
+          title: "Formato",
+          group: "formato",
+          count: "id",
+        },
+        {
+          title: "Tipo do Recurso",
+          group: "tipo",
+          count: "id",
+        },
+        {
+          title: "Tipo de Arquivo",
+          group: "tipo_arquivo",
+          count: "id",
+        },
+        {
+          title: "Nome do Arquivo",
+          group: "nome_arquivo",
+          count: "id",
+        },
+        {
+          title: "Extensão do Arquivo",
+          group: "extensao_arquivo",
+          count: "id",
+        },
       ],
     };
   },
   async mounted() {
-    await this.loadCharts();
+    await this.loadFilters();
   },
   methods: {
     ...mapActions(["groupBy", "count"]),
-    loadCharts() {
-      const { data } = this.groupBy({
-        params: {
-          group: "tipo_arquivo",
-          count: "id",
-        },
+    loadFilters() {
+      console.log("vamos pros filtros");
+      this.labels.forEach((label, i) => {
+        // console.log(label.title);
+        // console.log(i);
+        this.groupBy({
+          params: {
+            group: label.group,
+            count: label.count,
+          },
+        }).then((response) => {
+          this.filters[i] = response.data;
+          // console.log(response);
+          // console.log(i);
+        });
       });
-      console.log(data);
+      this.loaded = 1;
     },
   },
 };
 </script>
+<style>
+#title-row {
+  background-color: rgba(0, 143, 251, 0.85);
+  height: 80px;
+  /* margin-top: 10px; */
+  margin-bottom: 10px;
+}
+#title-text {
+  color: #ffffff;
+  margin-bottom: 0px;
+  font-size: 30px;
+}
+.element {
+  color: #ffffff;
+}
+</style>

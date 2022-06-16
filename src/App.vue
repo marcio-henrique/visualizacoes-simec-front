@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :style="{ background: $vuetify.theme.themes['light'].wrapColor }">
     <v-main>
       <main-dashboard/>
     </v-main>
