@@ -125,13 +125,9 @@ export default {
       };
 
       if (this.filters.length > 0) {
-        console.log("filters", this.filters);
         this.filters.forEach((filter) => {
           if (filter !== undefined && filter.length > 0) {
-            console.log("fifi", filter);
-
             if (filter.length == 1) {
-              console.log(filter[0]);
               params[filter[0].group] = filter[0].title;
             } else {
               params[filter[0].group] = JSON.stringify(
@@ -142,12 +138,9 @@ export default {
         });
       }
 
-      console.log(params);
-
       this.groupBy({
         params: params,
       }).then((response) => {
-        // console.log(response);
         this.chartData = response.data;
         this.updateOptionsChart();
         this.updateSeriesChart();

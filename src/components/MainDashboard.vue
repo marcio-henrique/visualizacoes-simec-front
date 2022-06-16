@@ -167,10 +167,7 @@ export default {
   methods: {
     ...mapActions(["groupBy", "count"]),
     loadFilters() {
-      console.log("vamos pros filtros");
       this.labels.forEach((label, i) => {
-        // console.log(label.title);
-        // console.log(i);
         this.groupBy({
           params: {
             group: label.group,
@@ -178,8 +175,6 @@ export default {
           },
         }).then((response) => {
           this.filters[i] = response.data;
-          // console.log(response);
-          // console.log(i);
         });
       });
       this.loaded = 1;
