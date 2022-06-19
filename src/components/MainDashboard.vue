@@ -11,10 +11,12 @@
             :label="labels[n - 1].title"
             v-model="selected[n - 1]"
             :items="filters[n - 1]"
+            :key="n"
             item-text="title"
             outlined
             multiple
             return-object
+            v-on:change="reloadFilters(n - 1)"
             style="padding-left: 10px; padding-right: 10px"
           >
             <template v-slot:selection="{ item, index }">
@@ -31,7 +33,15 @@
             </template>
           </v-select>
         </v-col>
+        <v-btn
+          elevation="4"
+          plain
+          style="margin-left: 10px; margin-bottom: 10px"
+          @click="cleanFilters()"
+          >Limpar Filtros</v-btn
+        >
       </v-row>
+
       <v-row align="center" no-gutters>
         <v-col
           cols="6"
@@ -162,24 +172,68 @@ export default {
     };
   },
   async mounted() {
-    await this.loadFilters();
+    await this.getFilters();
   },
   methods: {
     ...mapActions(["groupBy", "count"]),
-    loadFilters() {
+    reloadFilters(i) {
+      //console.log(i);
+      //console.log("bora ver");
+      let params = {};
+      if (this.selected.length > 0) {
+        this.selected.forEach((select) => {
+          if (select !== undefined && select.length > 0) {
+            if (select.length == 1) {
+              params[select[0].group] = select[0].title;
+            } else {
+              params[select[0].group] = JSON.stringify(
+                select.map((y) => y.title)
+              );
+            }
+          }
+        });
+      }
+      //console.log("hora do show", params);
+      this.getFilters(params, i, 1);
+    },
+    getFilters(filterParams = {}, j = -1, s = 0) {
       this.labels.forEach((label, i) => {
+        let params = {
+          group: label.group,
+          count: label.count,
+          ...filterParams,
+        };
+        //console.log(params);
+
+        //console.log("ideossincrasias", {
+        //   group: label.group,
+        //   count: label.count,
+        // });
+
         this.groupBy({
-          params: {
-            group: label.group,
-            count: label.count,
-          },
+          params: params,
         }).then((response) => {
-          this.filters[i] = response.data;
+          if (i !== j) {
+            this.filters[i] = response.data;
+
+            if (s === 1) {
+              this.$forceUpdate();
+            }
+            //console.log(response);
+          }
         });
       });
       this.loaded = 1;
     },
+    cleanFilters() {
+      this.selected = [];
+    },
   },
+  // watch: {
+  //   selected() {
+  //     this.loadFilters();
+  //   },
+  // },
 };
 </script>
 <style>

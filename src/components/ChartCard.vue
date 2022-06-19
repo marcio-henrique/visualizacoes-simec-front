@@ -20,10 +20,6 @@ export default {
     apexchart: VueApexCharts,
   },
   props: {
-    // chartType: {
-    //   type: String,
-    //   required: true,
-    // },
     chartConfig: {
       required: true,
     },
@@ -34,11 +30,46 @@ export default {
   data: () => {
     return {
       optionsChart: {
+        legend: {
+          show: false,
+        },
+        // theme: {
+        //   mode: "light",
+        //   palette: "palette1",
+        //   monochrome: {
+        //     enabled: true,
+        //     color: "#008ffbd9",
+        //     shadeTo: "light",
+        //     shadeIntensity: 0.65,
+        //   },
+        // },
+        colors: [
+          "#008ffbd9",
+          "#00e396d9",
+          "#feb019d9",
+          "#ff4560d9",
+          "#775dd0d9",
+          "#546e7ad9",
+          "#26a69ad9",
+          "#d10ce8d9",
+          "#f9a3a4",
+        ],
+        // colors: [
+        //   "#33b2df",
+        //   "#546E7A",
+        //   "#d4526e",
+        //   "#13d8aa",
+        //   "#A5978B",
+        //   "#2b908f",
+        //   "#f9a3a4",
+        //   "#90ee7e",
+        //   "#f48024",
+        //   "#69d2e7",
+        // ],
         chart: {
           type: "bar",
           background: "#fff",
           height: 350,
-          // stacked: true,
           toolbar: {
             show: true,
           },
@@ -70,6 +101,7 @@ export default {
             dataLabels: {
               position: "top", // top, center, bottom
             },
+            distributed: true,
           },
         },
         dataLabels: {
