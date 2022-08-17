@@ -191,9 +191,9 @@ export default {
           }
         });
       }
-      this.getFilters(params, i, 1);
+      this.getFilters(1, params, i);
     },
-    getFilters(filterParams = {}, j = -1, s = 0) {
+    getFilters(forceUpdate = 0, filterParams = {}, j = -1) {
       this.labels.forEach((label, i) => {
         let select = this.selected[i];
         if (select !== undefined && select.length > 0) {
@@ -212,7 +212,7 @@ export default {
           if (i !== j) {
             this.filters[i] = response.data;
 
-            if (s === 1) {
+            if (forceUpdate === 1) {
               this.$forceUpdate();
             }
           }
@@ -222,6 +222,7 @@ export default {
     },
     cleanFilters() {
       this.selected = [];
+      this.getFilters(1);
     },
   },
   // watch: {
