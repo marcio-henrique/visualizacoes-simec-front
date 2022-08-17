@@ -177,8 +177,6 @@ export default {
   methods: {
     ...mapActions(["groupBy", "count"]),
     reloadFilters(i) {
-      //console.log(i);
-      //console.log("bora ver");
       let params = {};
       if (this.selected.length > 0) {
         this.selected.forEach((select) => {
@@ -193,22 +191,20 @@ export default {
           }
         });
       }
-      //console.log("hora do show", params);
       this.getFilters(params, i, 1);
     },
     getFilters(filterParams = {}, j = -1, s = 0) {
       this.labels.forEach((label, i) => {
+        let select = this.selected[i];
+        if (select !== undefined && select.length > 0) {
+          return;
+        }
+
         let params = {
           group: label.group,
           count: label.count,
           ...filterParams,
         };
-        //console.log(params);
-
-        //console.log("ideossincrasias", {
-        //   group: label.group,
-        //   count: label.count,
-        // });
 
         this.groupBy({
           params: params,
@@ -219,7 +215,6 @@ export default {
             if (s === 1) {
               this.$forceUpdate();
             }
-            //console.log(response);
           }
         });
       });
