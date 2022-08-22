@@ -156,6 +156,14 @@ export default {
         count: this.chartConfig.count,
       };
 
+      let loader = this.$loading.show({
+          container: null,
+          canCancel: false,
+          onCancel: this.onCancel,
+          opacity: 0.15
+          // is-full-page: true
+      });
+
       if (this.filters.length > 0) {
         this.filters.forEach((filter) => {
           if (filter !== undefined && filter.length > 0) {
@@ -174,6 +182,7 @@ export default {
         params: params,
       }).then((response) => {
         this.chartData = response.data;
+        loader.hide();
         this.updateOptionsChart();
         this.updateSeriesChart();
       });
